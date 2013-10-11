@@ -35,7 +35,8 @@ func testJson() string {
         "string":"value", "string2":null, "int":34, "float":23.34, "bool":true, "array": [1,2,3,"Test"],
         "obj": {"bool": false,"float": 1.89,"nested": {"wow": "really?", "hah":null}},
         "key_test": {"this_is_a_key":true, "key_2": "value!", "key_3_time": 12.34, "key4here": "checking in"},
-        "obj_array": [{"key": "value","int": 10}, {"key": "pair","int": 26}]
+        "obj_array": [{"key": "value","int": 10}, {"key": "pair","int": 26}],
+        "map": {"name":"john doe", "age":43, "active":true}
     }`
 }
 
@@ -81,6 +82,21 @@ func TestGofigBool(t *testing.T) {
 		t.Errorf("Bool() failed to fetch boolean value: %v", e)
 	} else if !expected {
 		t.Errorf("Unexpected value returned from Bool(): expected %v, got %v", expected, b)
+	}
+}
+
+func TestGofigMap(t *testing.T) {
+	conf := createTestConfig(t)
+	expected := map[string]interface{}{
+		"name":   "john doe",
+		"age":    43.0,
+		"active": true,
+	}
+
+	if m, e := conf.Map("map"); e != nil {
+		t.Errorf("Map() failed to fetch map value: %v", e)
+	} else if !reflect.DeepEqual(m, expected) {
+		t.Errorf("Unexpected value returned from Map(): expected %v, got %v", expected, m)
 	}
 }
 
@@ -139,20 +155,17 @@ func TestGofigStructArray(t *testing.T) {
 	conf := createTestConfig(t)
 	var pairs []testPair
 	conf.StructArray("obj_array", &pairs)
-	expectedLen := 2
-
-	if len(pairs) != expectedLen {
-		t.Errorf("Failed to map all pairs. expected %d, got %d.", expectedLen, len(pairs))
+	expected := []testPair{
+		testPair{Key: "value", Int: 10},
+		testPair{Key: "pair", Int: 26},
 	}
 
-	for _, p := range pairs {
-		if p.Key == "" {
-			t.Errorf("Pair.Key value should not be blank.")
-		}
+	if len(pairs) != len(expected) {
+		t.Errorf("Failed to map all pairs. expected %d, got %d.", len(expected), len(pairs))
+	}
 
-		if p.Int <= 0 {
-			t.Errorf("Pair.Int value should be greater than 0.")
-		}
+	if !reflect.DeepEqual(pairs, expected) {
+		t.Errorf("Unexpected result from Array(): expected %v, got %v", expected, pairs)
 	}
 }
 
