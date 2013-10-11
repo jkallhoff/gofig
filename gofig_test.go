@@ -29,13 +29,21 @@ type testPair struct {
 	Int float64
 }
 
+type nullTest struct {
+	Key   string
+	Float float64
+	Bool  bool
+}
+
 func testJson() string {
 	return `{
         "string":"value", "string2":null, "int":34, "float":23.34, "bool":true, "array": [1,2,3,"Test"],
         "obj": {"bool": false,"float": 1.89,"nested": {"wow": "really?", "hah":null}},
         "key_test": {"this_is_a_key":true, "key_2": "value!", "key_3_time": 12.34, "key4here": "checking in"},
         "obj_array": [{"key": "value","int": 10}, {"key": "pair","int": 26}],
-        "map": {"name":"john doe", "age":43, "active":true}
+        "map": {"name":"john doe", "age":43, "active":true},
+        "nullsoft": {"key": null, "float":null, "bool":null},
+        "null_obj": null
     }`
 }
 
@@ -107,7 +115,7 @@ func TestGofigArray(t *testing.T) {
 	}
 }
 
-func TestGofigValidString(t *testing.T) {
+func TestGofigString(t *testing.T) {
 	conf := createTestConfig(t)
 	expected := "value"
 	if s, e := conf.Str("string"); e != nil {
@@ -131,7 +139,11 @@ func TestGofigNestedStruct(t *testing.T) {
 	conf := createTestConfig(t)
 	obj := &testObj{}
 
-	conf.Struct("obj", obj)
+	if err := conf.Struct("obj", obj); err != nil {
+		t.Errorf("Struct() failed: %v", err)
+		t.FailNow()
+	}
+
 	if obj.Nested == nil {
 		t.Error("Struct() failed to map nested struct.")
 	}
@@ -141,17 +153,60 @@ func TestGofigNullStringInStruct(t *testing.T) {
 	conf := createTestConfig(t)
 	expected := ""
 	obj := &testObj{Nested: &testSubObj{Hah: "should get cleared"}}
-	conf.Struct("obj", obj)
+
+	if err := conf.Struct("obj", obj); err != nil {
+		t.Errorf("Struct() failed: %v", err)
+		t.FailNow()
+	}
 
 	if obj.Nested.Hah != expected {
 		t.Errorf("Unexpected value when mapping null strings to struct values: expected '%s', got '%s'", expected, obj.Nested.Hah)
 	}
 }
 
+func TestGofigNullStructValues(t *testing.T) {
+	conf := createTestConfig(t)
+	obj := &nullTest{}
+	expected := &nullTest{
+		Key:   "",
+		Float: 0.0,
+		Bool:  false,
+	}
+
+	if err := conf.Struct("nullsoft", obj); err != nil {
+		t.Errorf("Struct() failed: %v", err)
+		t.FailNow()
+	}
+
+	if !reflect.DeepEqual(obj, expected) {
+		t.Error("Struct() failed to set default values when json contains null.")
+	}
+}
+
+func TestGofigNullStruct(t *testing.T) {
+	conf := createTestConfig(t)
+	obj := &testObj{}
+	expected := &testObj{}
+
+	if err := conf.Struct("null_obj", obj); err != nil {
+		t.Errorf("Struct() failed: %v", err)
+		t.FailNow()
+	}
+
+	if !reflect.DeepEqual(obj, expected) {
+		t.Error("Struct() failed to return empty struct when object is null.")
+	}
+}
+
 func TestGofigStructArray(t *testing.T) {
 	conf := createTestConfig(t)
 	var pairs []testPair
-	conf.StructArray("obj_array", &pairs)
+
+	if err := conf.StructArray("obj_array", &pairs); err != nil {
+		t.Errorf("StructArray() failed: %v", err)
+		t.FailNow()
+	}
+
 	expected := []testPair{
 		testPair{Key: "value", Int: 10},
 		testPair{Key: "pair", Int: 26},
@@ -169,21 +224,25 @@ func TestGofigStructArray(t *testing.T) {
 func TestGofigKeyNameTranslation(t *testing.T) {
 	conf := createTestConfig(t)
 	obj := &keyTest{}
-	conf.Struct("key_test", obj)
+
+	if err := conf.Struct("key_test", obj); err != nil {
+		t.Error("Struct() failed: %v", err)
+		t.FailNow()
+	}
 
 	if obj.ThisIsAKey == false {
-		t.Errorf("Key name translation failed (this_is_a_key).")
+		t.Error("Key name translation failed (this_is_a_key).")
 	}
 
 	if obj.Key2 != "value!" {
-		t.Errorf("Key name translation failed (key_2).")
+		t.Error("Key name translation failed (key_2).")
 	}
 
 	if obj.Key3Time != 12.34 {
-		t.Errorf("Key name translation failed (key_3_time).")
+		t.Error("Key name translation failed (key_3_time).")
 	}
 
 	if obj.Key4here != "checking in" {
-		t.Errorf("Key name translation failed (key4here).")
+		t.Error("Key name translation failed (key4here).")
 	}
 }
