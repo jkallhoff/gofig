@@ -194,7 +194,7 @@ func TestGofigNullStruct(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(obj, expected) {
-		t.Error("Struct() failed to return empty struct when object is null.")
+		t.Error("Struct() failed to set empty struct when object is null.")
 	}
 }
 
@@ -224,25 +224,19 @@ func TestGofigStructArray(t *testing.T) {
 func TestGofigKeyNameTranslation(t *testing.T) {
 	conf := createTestConfig(t)
 	obj := &keyTest{}
+	expected := &keyTest{
+		ThisIsAKey: true,
+		Key2:       "value!",
+		Key3Time:   12.34,
+		Key4here:   "checking in",
+	}
 
 	if err := conf.Struct("key_test", obj); err != nil {
 		t.Error("Struct() failed: %v", err)
 		t.FailNow()
 	}
 
-	if obj.ThisIsAKey == false {
-		t.Error("Key name translation failed (this_is_a_key).")
-	}
-
-	if obj.Key2 != "value!" {
-		t.Error("Key name translation failed (key_2).")
-	}
-
-	if obj.Key3Time != 12.34 {
-		t.Error("Key name translation failed (key_3_time).")
-	}
-
-	if obj.Key4here != "checking in" {
-		t.Error("Key name translation failed (key4here).")
+	if !reflect.DeepEqual(obj, expected) {
+		t.Errorf("Struct() failed to map key names correctly. Expected %v, got %v", expected, obj)
 	}
 }
