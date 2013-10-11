@@ -4,11 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"regexp"
 	"strings"
 )
-
-var rx *regexp.Regexp = regexp.Compile(`\_.{1}`)
 
 // Str returns the string value of a key, or an empty string if null.
 func (c *Config) Str(key string) (string, error) {
@@ -134,9 +131,9 @@ func (c *Config) mapToStruct(m map[string]interface{}, s interface{}) {
 	}
 }
 
-func (c *Config) keyNameToFieldName(string s) string {
-	result = rx.ReplaceAllStringFunc(s, func(m string) string {
-		return strings.ToUpper(s[1:])
+func (c *Config) keyNameToFieldName(s string) string {
+	result := c.keyRx.ReplaceAllStringFunc(s, func(m string) string {
+		return strings.ToUpper(m[1:])
 	})
 	return strings.Title(result)
 }
