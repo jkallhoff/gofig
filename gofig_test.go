@@ -3,7 +3,6 @@ package gofig
 import (
 	"encoding/json"
 	"reflect"
-	"regexp"
 	"testing"
 )
 
@@ -41,16 +40,14 @@ func testJson() string {
 }
 
 func createTestConfig(t *testing.T) (conf *Config) {
-	conf = &Config{}
-	if rx, e := regexp.Compile(`\_.{1}`); e != nil {
-		t.Error("Failed to compile key name regex: %v", e)
+	conf, err := initConfig()
+	if err != nil {
+		t.Errorf("%v", err)
 		t.FailNow()
-	} else {
-		conf.keyRx = rx
-		if e := json.Unmarshal([]byte(testJson()), &conf.values); e != nil {
-			t.Errorf("Failed to parse testing json: %v", e)
-			t.FailNow()
-		}
+	}
+	if e := json.Unmarshal([]byte(testJson()), &conf.values); e != nil {
+		t.Errorf("Failed to parse testing json: %v", e)
+		t.FailNow()
 	}
 	return conf
 }

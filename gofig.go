@@ -18,11 +18,21 @@ func Load(path string) (*Config, error) {
 	if b, err := ioutil.ReadFile(path); err != nil {
 		return nil, err
 	} else {
-		rx, _ := regexp.Compile(`\_.{1}`)
-		c := &Config{keyRx: rx}
-		if err = json.Unmarshal(b, &c.values); err != nil {
-			return nil, err
+		if c, err := initConfig(); err != nil {
+			panic("Failed to initialize config.")
+		} else {
+			if err = json.Unmarshal(b, &c.values); err != nil {
+				return nil, err
+			}
+			return c, nil
 		}
-		return c, nil
 	}
+}
+
+func initConfig() (c *Config, err error) {
+	rx, err := regexp.Compile(`^.{1}|\_.{1}`)
+	if err == nil {
+		c = &Config{keyRx: rx}
+	}
+	return
 }

@@ -135,7 +135,11 @@ func (c *Config) mapToStruct(m map[string]interface{}, s interface{}) {
 
 func (c *Config) keyNameToFieldName(s string) string {
 	result := c.keyRx.ReplaceAllStringFunc(s, func(m string) string {
-		return strings.ToUpper(m[1:])
+		idx := 1
+		if len(m) == 1 {
+			idx = 0
+		}
+		return strings.ToUpper(m[idx:])
 	})
-	return strings.Title(result)
+	return result
 }
