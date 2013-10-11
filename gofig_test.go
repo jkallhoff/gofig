@@ -57,7 +57,7 @@ func createTestConfig(t *testing.T) (conf *Config) {
 		t.Errorf("Failed to parse testing json: %v", e)
 		t.FailNow()
 	}
-	return conf
+	return
 }
 
 func TestGofigInt(t *testing.T) {
