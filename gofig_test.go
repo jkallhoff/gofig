@@ -125,6 +125,26 @@ func TestGofigString(t *testing.T) {
 	}
 }
 
+func TestGofigFloatAsInt(t *testing.T) {
+	conf := createTestConfig(t)
+	expected := 23
+	if i, e := conf.Int("float"); e != nil {
+		t.Errorf("Int() failed to truncate float value: %v", e)
+	} else if i != expected {
+		t.Errorf("Unexpected value returned from Int(): expected %d, got %v", expected, i)
+	}
+}
+
+func TestGofigIntAsFloat(t *testing.T) {
+	conf := createTestConfig(t)
+	expected := 34.0
+	if i, e := conf.Float("int"); e != nil {
+		t.Errorf("Float() failed to convert int value: %v", e)
+	} else if i != expected {
+		t.Errorf("Unexpected value returned from Float(): expected %f, got %v", expected, i)
+	}
+}
+
 func TestGofigNullString(t *testing.T) {
 	conf := createTestConfig(t)
 	expected := ""

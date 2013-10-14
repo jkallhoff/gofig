@@ -90,9 +90,13 @@ func (c *Config) getValue(key string, result interface{}) (err error) {
 			rVal.Set(reflect.New(rType.Elem()).Elem())
 		} else {
 			vType := reflect.PtrTo(reflect.TypeOf(v))
+			vVal := reflect.ValueOf(v)
+
 			if vType.AssignableTo(rType) {
-				vVal := reflect.ValueOf(v)
 				rVal.Set(vVal)
+			} else if vType.ConvertibleTo(rType) {
+				cVal := vVal.Convert(rType)
+				rVal.Set(cVal)
 			} else {
 				err = errors.New("Cannot assign config value to expected type.")
 			}
@@ -115,6 +119,9 @@ func (c *Config) mapToStruct(m map[string]interface{}, s interface{}) {
 			f.Set(reflect.New(f.Type()).Elem())
 		} else if f.Kind() != reflect.Invalid && f.Type().AssignableTo(vType) {
 			f.Set(vVal)
+		} else if vType.ConvertibleTo(f.Type()) {
+			cVal := vVal.Convert(f.Type())
+			f.Set(cVal)
 		} else if vType.Kind() == reflect.Map && vType.Key().Kind() == reflect.String && vType.Elem().Kind() == reflect.Interface {
 			var obj interface{}
 			var objVal reflect.Value
