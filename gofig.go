@@ -1,4 +1,10 @@
-// Gofig provides methods to load configuration values from a given JSON file.
+/*
+Gofig provides methods to load configuration values from a given JSON file.
+
+When inflating structs, key name underscores are dropped & the first letter of the next
+word is capitalized.  For example, a json key of 'my_config_value' will be
+populated into a struct field called MyConfigValue.
+*/
 package gofig
 
 import (
