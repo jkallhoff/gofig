@@ -1,7 +1,6 @@
 package gofig
 
 import (
-	"encoding/json"
 	"reflect"
 	"testing"
 )
@@ -35,8 +34,8 @@ type nullTest struct {
 	Bool  bool
 }
 
-func testJson() string {
-	return `{
+func createTestConfig(t *testing.T) (conf *Config) {
+	conf, err := initConfig([]byte(`{
         "string":"value", "string2":null, "int":34, "float":23.34, "bool":true, "array": [1,2,3,"Test"],
         "obj": {"bool": false,"float": 1.89,"nested": {"wow": "really?", "hah":null}},
         "key_test": {"this_is_a_key":true, "key_2": "value!", "key_3_time": 12.34, "key4here": "checking in"},
@@ -44,17 +43,10 @@ func testJson() string {
         "map": {"name":"john doe", "age":43, "active":true},
         "nullsoft": {"key": null, "float":null, "bool":null},
         "null_obj": null
-    }`
-}
+    }`))
 
-func createTestConfig(t *testing.T) (conf *Config) {
-	conf, err := initConfig()
 	if err != nil {
 		t.Errorf("%v", err)
-		t.FailNow()
-	}
-	if e := json.Unmarshal([]byte(testJson()), &conf.values); e != nil {
-		t.Errorf("Failed to parse testing json: %v", e)
 		t.FailNow()
 	}
 	return
