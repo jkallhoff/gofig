@@ -18,6 +18,11 @@ type testObj struct {
 	Nested *testSubObj
 }
 
+type partialTestObj struct {
+	Bool  bool
+	Float float64
+}
+
 type testSubObj struct {
 	Wow string
 	Hah string
@@ -207,6 +212,24 @@ func TestGofigNullStruct(t *testing.T) {
 
 	if !reflect.DeepEqual(obj, expected) {
 		t.Error("Struct() failed to set empty struct when object is null.")
+	}
+}
+
+func TestGofigStructIgnoresMissingFields(t *testing.T) {
+	conf := createTestConfig(t)
+	obj := &partialTestObj{}
+	expected := &partialTestObj{
+		Bool:  false,
+		Float: 1.89,
+	}
+
+	if err := conf.Struct("obj", obj); err != nil {
+		t.Errorf("Struct() failed: %v", err)
+		t.FailNow()
+	}
+
+	if !reflect.DeepEqual(obj, expected) {
+		t.Error("Struct() failed to map available fields.")
 	}
 }
 

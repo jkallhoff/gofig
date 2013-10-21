@@ -115,6 +115,10 @@ func (c *Config) mapToStruct(m map[string]interface{}, s interface{}) {
 		vVal := reflect.ValueOf(v)
 		f := pVal.FieldByName(c.keyNameToFieldName(k))
 
+		if f.Kind() == reflect.Invalid {
+			continue
+		}
+
 		if v == nil {
 			f.Set(reflect.New(f.Type()).Elem())
 		} else if f.Kind() != reflect.Invalid && f.Type().AssignableTo(vType) {
