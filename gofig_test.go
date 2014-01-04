@@ -67,6 +67,16 @@ func TestGofigInt(t *testing.T) {
 	}
 }
 
+func TestGofigInt64(t *testing.T) {
+	conf := createTestConfig(t)
+	expected := int64(34)
+	if i, e := conf.Int64("int"); e != nil {
+		t.Errorf("Int() failed to fetch integer value: %v", e)
+	} else if i != expected {
+		t.Errorf("Unexpected value returned from Int(): expected %d, got %d", expected, i)
+	}
+}
+
 func TestGofigFloat(t *testing.T) {
 	conf := createTestConfig(t)
 	expected := 23.34

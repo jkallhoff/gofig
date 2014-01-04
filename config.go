@@ -20,6 +20,12 @@ func (c *Config) Int(key string) (int, error) {
 	return int(f), err
 }
 
+// Int64 returns the 64 bit integer value of the given key, truncating any floating point values.
+func (c *Config) Int64(key string) (int64, error) {
+	f, err := c.Float(key)
+	return int64(f), err
+}
+
 // Float returns the float64 value of the given key.
 func (c *Config) Float(key string) (float64, error) {
 	var f float64
