@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Gofig : gofig is a config file Go package for loading config files at runtime" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Gofig</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/JKallhoff/gofig">View on GitHub</a>
+
+          <h1 id="project_title">Gofig</h1>
+          <h2 id="project_tagline">gofig is a config file Go package for loading config files at runtime</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/JKallhoff/gofig/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/JKallhoff/gofig/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="gofig" class="anchor" href="#gofig"><span class="octicon octicon-link"></span></a>gofig</h1>
+
+<p>Gofig provides methods to load configuration values from a given JSON file.</p>
+
+<p>When inflating structs, key name underscores are dropped &amp; the first letter of the next
+word is capitalized.  For example, a json key of 'my_config_value' will be
+populated into a struct field called MyConfigValue.</p>
+
+<p>Documentation available at <a href="http://godoc.org/github.com/JKallhoff/gofig">godoc</a>.</p>
+
+<h2>
+<a name="example" class="anchor" href="#example"><span class="octicon octicon-link"></span></a>Example</h2>
+
+<pre><code>if conf, err := gofig.Load("./application.conf"); err == nil {
+    // Basic types
+    s, err := conf.Str("first_name")
+    b, err := conf.Bool("is_active")
+    i, err := conf.Int("item_count")
+    f, err := conf.Float("ranking")
+    a, err := conf.Array("some_array")
+    m, err := conf.Map("complex_object")
+
+    // Inflating structs
+    obj := &amp;SomeType{}
+    if err := conf.Struct("complex_object", obj); err == nil {
+        // do something with inflated obj struct
+    }
+
+    var items []Item
+    if err := conf.StructArray("lots_of_items", &amp;items); err == nil {
+        // do something with populated items array  
+    }
+}
+</code></pre>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Gofig maintained by <a href="https://github.com/JKallhoff">JKallhoff</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
